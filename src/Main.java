@@ -1,86 +1,89 @@
-import Tasks.*;
+import manager.TaskManager;
+import task.Epic;
+import task.Subtask;
+import task.Task;
+import task.TaskStatus;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        Task task1 = new Task("Task 1", "Single Task");
-        Task task2 = new Task("Task 2", "Single Task");
-        Epic epic3 = new Epic("Task 3", "Epic");
-        SubTask sub4 = new SubTask("Task 4", "SubTask of Epic 1", epic3);
-        SubTask sub5 = new SubTask("Task 5", "SubTask of Epic 1", epic3);
-        Epic epic6 = new Epic("Task 6", "Epic");
-        SubTask sub7 = new SubTask("Task 7", "SubTask of Epic 2", epic6);
-        TaskManager.addTask(task1, task2, epic3, sub4, sub5, epic6, sub7);
+        TaskManager manager = new TaskManager();
 
-        System.out.println("\tAll tasks:");
-        print(TaskManager.getTaskList());
+        Task task1 = new Task("Task 1", "Single Task 1", TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Single Task 2", TaskStatus.NEW);
+        manager.addTask(task1, task2);
+        assert (task1.equals(manager.getTaskById(task1.getId())));
+        System.out.println("Added task");
+
+        Epic epic1 = new Epic("Epic 1", "Epic 1");
+        manager.addEpic(epic1);
+        assert (epic1.equals(manager.getEpicById(epic1.getId())));
+        System.out.println("Added epic");
+
+        Subtask sub1 = new Subtask("Sub 1", "Sub 1 of Epic 1", TaskStatus.NEW, epic1.getId());
+        Subtask sub2 = new Subtask("Sub 2", "Sub 2 of Epic 1", TaskStatus.NEW, epic1.getId());
+        manager.addSubtask(sub1, sub2);
+        assert (sub1.equals(manager.getSubtaskById(sub1.getId())));
+        System.out.println("Added sub");
+
+        Epic epic2 = new Epic("Epic 2", "Epic 2");
+        manager.addEpic(epic2);
+
+        Subtask sub3 = new Subtask("Sub 3", "Sub 3 of Epic 2", TaskStatus.NEW, epic2.getId());
+        manager.addSubtask(sub3);
+
         System.out.println();
 
-        System.out.println("\tAll single tasks:");
-        print(TaskManager.getSingleTaskList());
+        printList(manager.getAllTask());
+        System.out.println();
+        printList(manager.getAllEpic());
+        System.out.println();
+        printList(manager.getAllSubtask());
         System.out.println();
 
-        System.out.println("\tAll epics:");
-        print(TaskManager.getEpicList());
+        printList(manager.getSubtasksByEpicId(epic1.getId()));
+
+        task1 = new Task(task1.getId(), "Task 1", "Updated Task 1", TaskStatus.DONE);
+        manager.updateTask(task1);
+        assert (task1.equals(manager.getTaskById(task1.getId())));
+        System.out.println("Task updated");
+
+        manager.deleteAllTask();
+        assert (manager.getAllTask().isEmpty());
+        System.out.println("Tasks deleted");
+
+        sub1 = new Subtask(sub1.getId(), "Sub 1", "Updated Sub 1",
+                TaskStatus.DONE, epic1.getId());
+        manager.updateSubtask(sub1);
+
+        System.out.println(manager.getEpicById(epic1.getId()));
+        printList(manager.getSubtasksByEpicId(epic1.getId()));
         System.out.println();
 
-        System.out.println("\tAll subTasks:");
-        print(TaskManager.getSubTaskList());
+        sub2 = new Subtask(sub2.getId(), "Sub 2", "Updated Sub 2",
+                TaskStatus.DONE, epic1.getId());
+        manager.updateSubtask(sub2);
+
+        System.out.println(manager.getEpicById(epic1.getId()));
+        printList(manager.getSubtasksByEpicId(epic1.getId()));
         System.out.println();
 
-        System.out.println("\tSubTasks of epic 1:");
-        print(TaskManager.getEpicSubTasks(2));
-        System.out.println();
+        Subtask sub4 = new Subtask("Sub 4", "Sub 4 of epic 1", TaskStatus.IN_PROGRESS, epic1.getId());
+        manager.addSubtask(sub4);
 
-        System.out.println("\tSubTasks of epic 2:");
-        print(TaskManager.getEpicSubTasks(5));
-        System.out.println();
+        System.out.println(manager.getEpicById(epic1.getId()));
+        printList(manager.getSubtasksByEpicId(epic1.getId()));
 
-        System.out.println("\tChange statuses: Task 1 (In progress), Task 2 (Done)");
-        task1.setStatus(TaskStatus.IN_PROGRESS);
-        task2.setStatus(TaskStatus.DONE);
-        System.out.println(TaskManager.getTask(0));
-        System.out.println(TaskManager.getTask(1));
-        System.out.println();
 
-        System.out.println("\tChange statuses: Task 4 (In progress), Task 5 (Done)");
-        sub4.setStatus(TaskStatus.IN_PROGRESS);
-        sub5.setStatus(TaskStatus.DONE);
-        System.out.println(TaskManager.getTask(2));
-        System.out.println(TaskManager.getTask(3));
-        System.out.println(TaskManager.getTask(4));
-        System.out.println();
-
-        System.out.println("\tChange statuses: Task 4 (Done)");
-        sub4.setStatus(TaskStatus.DONE);
-        System.out.println(TaskManager.getTask(2));
-        System.out.println(TaskManager.getTask(3));
-        System.out.println(TaskManager.getTask(4));
-        System.out.println();
-
-        System.out.println("\tRemove task 1:");
-        TaskManager.removeTask(0);
-        print(TaskManager.getSingleTaskList());
-        System.out.println();
-
-        System.out.println("\tRemove epic:");
-        TaskManager.removeTask(2);
-        print(TaskManager.getTaskList());
-        System.out.println();
-
-        System.out.println("\tClear");
-        TaskManager.clear();
-        print(TaskManager.getTaskList());
+        manager.deleteAllEpic();
+        printList(manager.getAllEpic());
+        printList(manager.getAllSubtask());
     }
 
-    static void print(HashMap map) {
-        if(map.isEmpty()) {
-            System.out.println("Empty!");
-            return;
-        }
-        for(Object obj : map.values()) {
+    static void printList(List list) {
+        for (Object obj : list) {
             System.out.println(obj);
         }
     }

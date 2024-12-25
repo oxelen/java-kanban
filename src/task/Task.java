@@ -1,36 +1,30 @@
-package Tasks;
-
-import java.util.Objects;
+package task;
 
 public class Task {
     protected String name;
     protected String description;
-    protected final int id;
+    protected int id;
     protected TaskStatus status;
-    private static int cnt = 0;
 
-    public Task(String name, String description) {
+    public Task(String name, String description, TaskStatus status) {
         this.name = name;
         this.description = description;
-        status = TaskStatus.NEW;
-        id = cnt;
-        cnt++;
+        this.status = status;
     }
 
-    public void setName(String name) {
+    public Task(int id, String name, String description, TaskStatus status) {
+        this.id = id;
         this.name = name;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
+        this.status = status;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public TaskStatus getStatus() {
@@ -45,5 +39,13 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
