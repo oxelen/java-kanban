@@ -76,10 +76,16 @@ public class Main {
         System.out.println(manager.getEpicById(epic1.getId()));
         printList(manager.getSubtasksByEpicId(epic1.getId()));
 
-
-        manager.deleteAllEpic();
+        manager.deleteAllSubtask();
+        System.out.println();
         printList(manager.getAllEpic());
         printList(manager.getAllSubtask());
+
+        printList(manager.getSubtasksByEpicId(epic1.getId()));
+
+        /*manager.deleteAllEpic();
+        printList(manager.getAllEpic());
+        printList(manager.getAllSubtask());*/
     }
 
     static void printList(List list) {

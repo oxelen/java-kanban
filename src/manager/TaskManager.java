@@ -1,8 +1,14 @@
 package manager;
 
-import java.util.*;
+import task.Epic;
+import task.Subtask;
+import task.Task;
+import task.TaskStatus;
 
-import task.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TaskManager {
     private final HashMap<Integer, Task> taskMap;
@@ -18,27 +24,24 @@ public class TaskManager {
         idCreator = 0;
     }
 
-    private int createId() {
-        return idCreator++;
-    }
 
-            //Create Tasks
+    //Create Tasks
     public void addTask(Task... tasks) {
-        for(Task task : tasks) {
+        for (Task task : tasks) {
             task.setId(createId());
             taskMap.put(task.getId(), task);
         }
     }
 
     public void addEpic(Epic... epics) {
-        for(Epic epic : epics) {
+        for (Epic epic : epics) {
             epic.setId(createId());
             epicMap.put(epic.getId(), epic);
         }
     }
 
     public void addSubtask(Subtask... subtasks) {
-        for(Subtask subtask : subtasks) {
+        for (Subtask subtask : subtasks) {
             subtask.setId(createId());
             subtaskMap.put(subtask.getId(), subtask);
             getEpicById(subtask.getEpicId()).addSubtaskId(subtask.getId());
@@ -46,7 +49,7 @@ public class TaskManager {
         }
     }
 
-            //Get Tasks
+    //Get Tasks
     public ArrayList<Task> getAllTask() {
         return new ArrayList<>(taskMap.values());
     }
@@ -59,7 +62,7 @@ public class TaskManager {
         return new ArrayList<>(subtaskMap.values());
     }
 
-            //Delete Task maps
+    //Delete Task maps
     public void deleteAllTask() {
         taskMap.clear();
     }
@@ -71,9 +74,13 @@ public class TaskManager {
 
     public void deleteAllSubtask() {
         subtaskMap.clear();
+        for(Epic epic : epicMap.values()) {
+            epic.clearSubtaskList();
+            updateEpicStatus(epic.getId());
+        }
     }
 
-            //Get tasks by id
+    //Get tasks by id
     public Task getTaskById(int id) {
         return taskMap.get(id);
     }
@@ -86,13 +93,13 @@ public class TaskManager {
         return subtaskMap.get(id);
     }
 
-            //Update Tasks
+    //Update Tasks
     public void updateTask(Task task) {
         taskMap.put(task.getId(), task);
     }
 
     public void updateEpic(Epic epic) {
-        for(Integer subId : getEpicById(epic.getId()).getSubtasks()) {
+        for (Integer subId : getEpicById(epic.getId()).getSubtasks()) {
             epic.addSubtaskId(subId);
         }
         epicMap.put(epic.getId(), epic);
@@ -103,13 +110,13 @@ public class TaskManager {
         updateEpicStatus(subtask.getEpicId());
     }
 
-            //Delete task by id
+    //Delete task by id
     public void deleteTaskById(int id) {
         taskMap.remove(id);
     }
 
     public void deleteEpicById(int id) {
-        for(Subtask sub : getSubtasksByEpicId(id)) {
+        for (Subtask sub : getSubtasksByEpicId(id)) {
             deleteSubtaskById(sub.getId());
         }
         epicMap.remove(id);
@@ -119,10 +126,10 @@ public class TaskManager {
         subtaskMap.remove(id);
     }
 
-            //Get Subtasks by epic
+    //Get Subtasks by epic
     public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
         ArrayList<Subtask> res = new ArrayList<>();
-        for(Integer subId : getEpicById(epicId).getSubtasks()) {
+        for (Integer subId : getEpicById(epicId).getSubtasks()) {
             res.add(getSubtaskById(subId));
         }
         return res;
@@ -134,22 +141,14 @@ public class TaskManager {
         ArrayList<Subtask> subs = getSubtasksByEpicId(epicId);
         Set<TaskStatus> statuses = new HashSet<>();
 
-        for(Subtask sub : subs) {
+        for (Subtask sub : subs) {
             statuses.add(sub.getStatus());
         }
 
         epic.updateStatus(statuses);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        TaskManager that = (TaskManager) o;
-        return idCreator == that.idCreator && Objects.equals(taskMap, that.taskMap) && Objects.equals(epicMap, that.epicMap) && Objects.equals(subtaskMap, that.subtaskMap);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(taskMap, epicMap, subtaskMap, idCreator);
+    private int createId() {
+        return idCreator++;
     }
 }

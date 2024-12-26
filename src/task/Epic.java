@@ -23,12 +23,20 @@ public class Epic extends Task {
     }
 
     public void updateStatus(Set<TaskStatus> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
+            status = TaskStatus.NEW;
+            return;
+        }
         if (statuses.size() == 1) {
             if (statuses.contains(TaskStatus.NEW))
                 status = TaskStatus.NEW;
             else if (statuses.contains(TaskStatus.DONE))
                 status = TaskStatus.DONE;
         } else status = TaskStatus.IN_PROGRESS;
+    }
+
+    public void clearSubtaskList() {
+        subtasksId.clear();
     }
 
     @Override
