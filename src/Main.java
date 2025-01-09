@@ -1,15 +1,12 @@
-import manager.TaskManager;
-import task.Epic;
-import task.Subtask;
-import task.Task;
-import task.TaskStatus;
+import managers.*;
 
 import java.util.List;
+import task.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+       /* InMemoryTaskManager manager = new InMemoryTaskManager();
 
         Task task1 = new Task("Task 1", "Single Task 1", TaskStatus.NEW);
         Task task2 = new Task("Task 2", "Single Task 2", TaskStatus.NEW);
@@ -83,14 +80,44 @@ public class Main {
 
         printList(manager.getSubtasksByEpicId(epic1.getId()));
 
-        /*manager.deleteAllEpic();
+        manager.deleteAllEpic();
         printList(manager.getAllEpic());
         printList(manager.getAllSubtask());*/
+
+        TaskManager manager = Managers.getDefault();
+
+        Task task1 = new Task("Task1", "Single Task", TaskStatus.IN_PROGRESS);
+        manager.addTask(task1);
+
+
+        Epic epic1 = new Epic("Epic1", "Epic 1");
+        manager.addEpic(epic1);
+
+        Subtask sub1 = new Subtask("Sub 1", "Sub 1 of epic 1", TaskStatus.NEW, epic1.getId());
+        manager.addSubtask(sub1);
+
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getTaskById(0);
+        manager.getEpicById(1);
+        manager.getSubtaskById(2);
+        manager.getTaskById(0);
+
+        System.out.println();
+
+        System.out.println("\t History:");
+        printList(manager.getHistory());
+
     }
 
-    static void printList(List list) {
-        for (Object obj : list) {
-            System.out.println(obj);
+    static <T> void printList(List<T> list) {
+        for (T item : list) {
+            System.out.println(item);
         }
     }
 }
