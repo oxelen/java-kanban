@@ -44,7 +44,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     Node first;
     Node last;
 
-    InMemoryHistoryManager() {    }
+    InMemoryHistoryManager() {
+    }
+
     @Override
     public void add(Task task) {
         remove(task.getId());
@@ -99,7 +101,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             first = last;
         } else {
             Node preLast = last;
-            last = new Node(task , preLast, null);
+            last = new Node(task, preLast, null);
             preLast.next = last;
         }
     }
