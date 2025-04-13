@@ -99,6 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubtask() {
         for (int id : subtaskMap.keySet()) {
             history.remove(id);
+            subtaskMap.get(id).setId(-1);
         }
         subtaskMap.clear();
         for (Epic epic : epicMap.values()) {
@@ -170,6 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         Epic tempEpic = epicMap.get(subtaskMap.get(id).getEpicId());
         tempEpic.removeSubId(id);
+        subtaskMap.get(id).setId(-1);
         subtaskMap.remove(id);
     }
 

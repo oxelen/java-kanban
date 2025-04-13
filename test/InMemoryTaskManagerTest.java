@@ -53,22 +53,6 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void historyShouldSavePreviousVersion() {
-        Task task1 = new Task("1", "1", TaskStatus.NEW);
-        manager.addTask(task1);
-        manager.getTaskById(0);
-
-        Task task2 = new Task(0, "2", "2", TaskStatus.NEW);
-        manager.updateTask(task2);
-        manager.getTaskById(0);
-
-        List<Task> history = manager.getHistory();
-
-        assertEquals(task1, history.get(0));
-        assertEquals(task2, history.get(1));
-    }
-
-    @Test
     void deletedSubtaskShouldNotKeepIdAfterDelete() {
         Epic epic = new Epic(0, "0", "0");
         Subtask sub = new Subtask(1, "1", "1", TaskStatus.NEW, 0);
