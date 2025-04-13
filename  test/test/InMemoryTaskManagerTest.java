@@ -69,4 +69,28 @@ class InMemoryTaskManagerTest {
         assertEquals(task1, history.get(0));
         assertEquals(task2, history.get(1));
     }
+
+    @Test
+    void deletedSubtaskShouldNotKeepIdAfterDelete() {
+        Epic epic = new Epic(0, "0", "0");
+        Subtask sub = new Subtask(1, "1", "1", TaskStatus.NEW, 0);
+        manager.addEpic(epic);
+        manager.addSubtask(sub);
+
+        manager.deleteSubtaskById(sub.getId());
+
+        assertNotEquals(1, sub.getId());
+    }
+
+    @Test
+    void epicsShouldNotKeepDeletedSubtaskId() {
+        Epic epic = new Epic(0, "0", "0");
+        Subtask sub = new Subtask(1, "1", "1", TaskStatus.NEW, 0);
+        manager.addEpic(epic);
+        manager.addSubtask(sub);
+
+        manager.deleteSubtaskById(1);
+
+        assertFalse(epic.getSubtasks().contains(1));
+    }
 }

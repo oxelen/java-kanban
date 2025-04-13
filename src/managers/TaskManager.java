@@ -10,7 +10,7 @@ import java.util.List;
 public interface TaskManager {
 
     List<Task> getHistory();
-    //Create Tasks
+
     void addTask(Task... tasks);
 
     void addEpic(Epic... epics);
