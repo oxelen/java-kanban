@@ -5,11 +5,7 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -84,7 +80,7 @@ public class InMemoryTaskManager implements TaskManager {
     //Delete Task maps
     @Override
     public void deleteAllTask() {
-        for(int id : taskMap.keySet()) {
+        for (int id : taskMap.keySet()) {
             history.remove(id);
         }
         taskMap.clear();
@@ -105,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
             history.remove(id);
         }
         subtaskMap.clear();
-        for(Epic epic : epicMap.values()) {
+        for (Epic epic : epicMap.values()) {
             epic.clearSubtaskList();
             updateEpicStatus(epic.getId());
         }
