@@ -8,37 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static class Node {
-        Task task;
-        Node prev;
-        Node next;
-
-        private Node(Task task, Node prev, Node next) {
-            this.task = task;
-            this.prev = prev;
-            this.next = next;
-        }
-
-        @Override
-        public String toString() {
-            return "Task = " + task.toString()
-                    + "; Prev = " + prev.task.toString()
-                    + "; Next = " + next.task.toString();
-        }
-
-        @Override
-
-        public boolean equals(Object obj) {
-            if (obj == null || obj.getClass() != this.getClass())
-                return false;
-
-            Node node = (Node) obj;
-
-            if (this.task == node.task && this.prev == node.prev && this.next == node.next)
-                return true;
-            return false;
-        }
-    }
 
     private Map<Integer, Node> nodeMap = new HashMap<>();
     Node first;
@@ -81,6 +50,38 @@ public class InMemoryHistoryManager implements HistoryManager {
 
             prevNode.next = nextNode;
             nextNode.prev = prevNode;
+        }
+    }
+
+    private static class Node {
+        Task task;
+        Node prev;
+        Node next;
+
+        private Node(Task task, Node prev, Node next) {
+            this.task = task;
+            this.prev = prev;
+            this.next = next;
+        }
+
+        @Override
+        public String toString() {
+            return "Task = " + task.toString()
+                    + "; Prev = " + prev.task.toString()
+                    + "; Next = " + next.task.toString();
+        }
+
+        @Override
+
+        public boolean equals(Object obj) {
+            if (obj == null || obj.getClass() != this.getClass())
+                return false;
+
+            Node node = (Node) obj;
+
+            if (this.task == node.task && this.prev == node.prev && this.next == node.next)
+                return true;
+            return false;
         }
     }
 
