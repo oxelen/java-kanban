@@ -1,10 +1,7 @@
-package test;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import task.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import task.Subtask;
+import task.TaskStatus;
 
 class SubtaskTest {
     @Test

@@ -9,6 +9,7 @@ public class Task {
     protected TaskStatus status;
 
     public Task(String name, String description, TaskStatus status) {
+        this.id = -1;
         this.name = name;
         this.description = description;
         this.status = status;

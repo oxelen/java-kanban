@@ -5,11 +5,7 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -84,19 +80,29 @@ public class InMemoryTaskManager implements TaskManager {
     //Delete Task maps
     @Override
     public void deleteAllTask() {
+        for (int id : taskMap.keySet()) {
+            history.remove(id);
+        }
         taskMap.clear();
     }
 
     @Override
     public void deleteAllEpic() {
+        for (int id : epicMap.keySet()) {
+            history.remove(id);
+        }
         epicMap.clear();
         deleteAllSubtask();
     }
 
     @Override
     public void deleteAllSubtask() {
+        for (int id : subtaskMap.keySet()) {
+            history.remove(id);
+            subtaskMap.get(id).setId(-1);
+        }
         subtaskMap.clear();
-        for(Epic epic : epicMap.values()) {
+        for (Epic epic : epicMap.values()) {
             epic.clearSubtaskList();
             updateEpicStatus(epic.getId());
         }
@@ -144,19 +150,28 @@ public class InMemoryTaskManager implements TaskManager {
     //Delete task by id
     @Override
     public void deleteTaskById(int id) {
+        history.remove(id);
         taskMap.remove(id);
     }
 
     @Override
     public void deleteEpicById(int id) {
+        history.remove(id);
         for (Subtask sub : getSubtasksByEpicId(id)) {
-            deleteSubtaskById(sub.getId());
+            int subId = sub.getId();
+            deleteSubtaskById(subId);
         }
+
         epicMap.remove(id);
     }
 
     @Override
     public void deleteSubtaskById(int id) {
+        history.remove(id);
+
+        Epic tempEpic = epicMap.get(subtaskMap.get(id).getEpicId());
+        subtaskMap.get(id).setId(-1);
+        tempEpic.removeSubId(id);
         subtaskMap.remove(id);
     }
 

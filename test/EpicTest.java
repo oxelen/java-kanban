@@ -1,9 +1,6 @@
-package test;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import task.*;
+import task.Epic;
 
 import java.util.List;
 
