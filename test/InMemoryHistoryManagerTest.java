@@ -14,7 +14,7 @@ class InMemoryHistoryManagerTest {
     Task task1 = new Task(1, "1", "1", TaskStatus.NEW);
     Task task2 = new Task(2, "2", "2", TaskStatus.NEW);
 
-    Task task3 = new Task(3 , "3", "3", TaskStatus.NEW);
+    Task task3 = new Task(3, "3", "3", TaskStatus.NEW);
 
     HistoryManager history = Managers.getDefaultHistory();
 

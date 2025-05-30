@@ -21,7 +21,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldAddDifferentTasks() {
-        Task task = new Task(0,"1", "1", TaskStatus.NEW);
+        Task task = new Task(0, "1", "1", TaskStatus.NEW);
         manager.addTask(task);
         Epic epic = new Epic(1, "2", "2");
         manager.addEpic(epic);
@@ -35,10 +35,10 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldNotConflictGeneratedIdAndGiven() {
-        Task task1 = new Task("1", "1", TaskStatus.NEW);
+        Task task1 = new Task(0, "1", "1", TaskStatus.NEW);
         manager.addTask(task1);
 
-        Task task2 = new Task(0, "2", "2", TaskStatus.NEW);
+        Task task2 = new Task("2", "2", TaskStatus.NEW);
         manager.addTask(task2);
 
         assertNotEquals(task2, manager.getTaskById(0));
