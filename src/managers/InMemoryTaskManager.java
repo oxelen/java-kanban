@@ -9,9 +9,9 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Integer, Task> taskMap;
-    private final HashMap<Integer, Epic> epicMap;
-    private final HashMap<Integer, Subtask> subtaskMap;
+    protected final HashMap<Integer, Task> taskMap;
+    protected final HashMap<Integer, Epic> epicMap;
+    protected final HashMap<Integer, Subtask> subtaskMap;
 
     private final HistoryManager history;
 
@@ -35,7 +35,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task... tasks) {
         for (Task task : tasks) {
-            task.setId(createId());
+            if (task.getId() == -1)
+                task.setId(createId());
             taskMap.put(task.getId(), task);
         }
     }
@@ -43,7 +44,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addEpic(Epic... epics) {
         for (Epic epic : epics) {
-            epic.setId(createId());
+            if (epic.getId() == -1)
+                epic.setId(createId());
             epicMap.put(epic.getId(), epic);
         }
     }
@@ -51,7 +53,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(Subtask... subtasks) {
         for (Subtask subtask : subtasks) {
-            subtask.setId(createId());
+            if (subtask.getId() == -1)
+                subtask.setId(createId());
             subtaskMap.put(subtask.getId(), subtask);
 
             Epic tempEpic = epicMap.get(subtask.getEpicId());
@@ -185,6 +188,20 @@ public class InMemoryTaskManager implements TaskManager {
         return res;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InMemoryTaskManager that = (InMemoryTaskManager) o;
+        return Objects.equals(taskMap, that.taskMap)
+                && Objects.equals(epicMap, that.epicMap)
+                && Objects.equals(subtaskMap, that.subtaskMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskMap, epicMap, subtaskMap);
+    }
 
     private void updateEpicStatus(int epicId) {
         Epic epic = epicMap.get(epicId);
@@ -199,6 +216,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private int createId() {
-        return idCreator++;
+        while (taskMap.containsKey(idCreator)
+                || epicMap.containsKey(idCreator)
+                || subtaskMap.containsKey(idCreator)) {
+            idCreator++;
+        }
+        return idCreator;
     }
 }

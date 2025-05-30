@@ -15,7 +15,7 @@ class SubtaskTest {
 
     @Test
     void subTaskCantBeHisOwnEpic() {
-        Subtask sub = new Subtask(0,"1", "1", TaskStatus.NEW, 0);
+        Subtask sub = new Subtask(0, "1", "1", TaskStatus.NEW, 0);
 
         Assertions.assertEquals(-1, sub.getEpicId());
     }
