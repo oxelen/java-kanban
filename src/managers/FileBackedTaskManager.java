@@ -1,6 +1,7 @@
 package managers;
 
 import task.*;
+import exceptions.ManagerSaveException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -207,11 +208,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             default:
                 return null;
         }
-    }
-}
-
-class ManagerSaveException extends Exception {
-    ManagerSaveException(String message) {
-        super(message);
     }
 }
