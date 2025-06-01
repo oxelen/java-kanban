@@ -1,7 +1,7 @@
 package managers;
 
-import task.*;
 import exceptions.ManagerSaveException;
+import task.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -151,7 +151,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public static String toString(Task task) {
+    private static String toString(Task task) {
         String epicId = "";
         TaskType type;
         if (task.getClass().equals(Epic.class))

@@ -37,21 +37,6 @@ public class SaveTest {
     }
 
     @Test
-    void toStringWorksCorrect() {
-        String testString = FileBackedTaskManager.toString(task1);
-        String targetString = "-1,TASK,task1,NEW,description task1,";
-        Assertions.assertEquals(targetString, testString);
-
-        testString = FileBackedTaskManager.toString(epic1);
-        targetString = "-1,EPIC,epic1,NEW,description epic1,";
-        Assertions.assertEquals(targetString, testString);
-
-        testString = FileBackedTaskManager.toString(sub1);
-        targetString = "-1,SUBTASK,sub1,NEW,description sub1,1";
-        Assertions.assertEquals(targetString, testString);
-    }
-
-    @Test
     void shouldSaveSomeTasks() throws IOException {
         File tempFile = File.createTempFile("temp", ".csv");
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
@@ -61,11 +46,10 @@ public class SaveTest {
         manager.addSubtask(sub1);
         File autoSaveFile = manager.getAutoSaveFile();
 
-        String targetString = String.format("%s\n%s\n%s\n%s\n",
-                firstStrokeInFile,
-                FileBackedTaskManager.toString(task1),
-                FileBackedTaskManager.toString(epic1),
-                FileBackedTaskManager.toString(sub1));
+        String targetString = String.format(firstStrokeInFile
+                + "\n0,TASK,task1,NEW,description task1,"
+                + "\n1,EPIC,epic1,NEW,description epic1,"
+                + "\n2,SUBTASK,sub1,NEW,description sub1,1\n");
 
         Assertions.assertEquals(targetString, Files.readString(autoSaveFile.toPath()));
     }
@@ -80,11 +64,10 @@ public class SaveTest {
         targetManager.addSubtask(sub1);
 
         try (Writer fileWriter = new FileWriter(tempFile)) {
-            String testString = String.format("%s\n%s\n%s\n%s\n",
-                    firstStrokeInFile,
-                    FileBackedTaskManager.toString(task1),
-                    FileBackedTaskManager.toString(epic1),
-                    FileBackedTaskManager.toString(sub1));
+            String testString = String.format(firstStrokeInFile
+                    + "\n0,TASK,task1,NEW,description task1,"
+                    + "\n1,EPIC,epic1,NEW,description epic1,"
+                    + "\n2,SUBTASK,sub1,NEW,description sub1,1\n");
             fileWriter.write(testString);
         }
 
