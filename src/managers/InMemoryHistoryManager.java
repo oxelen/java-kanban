@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private Map<Integer, Node> nodeMap = new HashMap<>();
+    private final Map<Integer, Node> nodeMap = new HashMap<>();
     Node first;
     Node last;
 
@@ -79,9 +79,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
             Node node = (Node) obj;
 
-            if (this.task == node.task && this.prev == node.prev && this.next == node.next)
-                return true;
-            return false;
+            return this.task == node.task && this.prev == node.prev && this.next == node.next;
         }
     }
 

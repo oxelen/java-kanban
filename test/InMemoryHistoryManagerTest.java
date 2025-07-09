@@ -1,9 +1,13 @@
 import managers.HistoryManager;
 import managers.Managers;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
 import task.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +15,83 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryHistoryManagerTest {
 
-    Task task1 = new Task(1, "1", "1", TaskStatus.NEW);
-    Task task2 = new Task(2, "2", "2", TaskStatus.NEW);
+    private Task task1;
+    private Task task2;
 
-    Task task3 = new Task(3, "3", "3", TaskStatus.NEW);
+    private Task task3;
 
-    HistoryManager history = Managers.getDefaultHistory();
+    HistoryManager history;
 
+    @BeforeEach
+    void init() {
+        task1 = new Task(1,
+                "1",
+                "1",
+                TaskStatus.NEW);
+        task2 = new Task(2,
+                "2",
+                "2",
+                TaskStatus.NEW);
+
+        task3 = new Task(3,
+                "3",
+                "3",
+                TaskStatus.NEW);
+
+        history = Managers.getDefaultHistory();
+    }
+
+    @Test
+    void shouldCreateEmptyHistory() {
+        Assertions.assertTrue(history.getHistory().isEmpty());
+    }
+
+    @Test
+    void shouldNotAddSameTasks() {
+        history.add(task1);
+        history.add(task1);
+
+        Assertions.assertEquals(1, history.getHistory().size());
+    }
+
+    @Test
+    void shouldRemoveFirst() {
+        List<Task> target = List.of(task2, task3);
+
+        history.add(task1);
+        history.add(task2);
+        history.add(task3);
+
+        history.remove(task1.getId());
+
+        assertEquals(target, history.getHistory());
+    }
+
+    @Test
+    void shouldRemoveMiddle() {
+        List<Task> target = List.of(task1, task3);
+
+        history.add(task1);
+        history.add(task2);
+        history.add(task3);
+
+        history.remove(task2.getId());
+
+        assertEquals(target, history.getHistory());
+    }
+
+    @Test
+    void shouldRemoveLast() {
+        List<Task> target = List.of(task1, task2);
+
+        history.add(task1);
+        history.add(task2);
+        history.add(task3);
+
+        history.remove(task3.getId());
+
+        assertEquals(target, history.getHistory());
+    }
 
     @Test
     void singleTaskHistoryWorksCorrect() {
@@ -40,20 +114,6 @@ class InMemoryHistoryManagerTest {
         history.add(task1);
         history.remove(task1.getId());
 
-        assertEquals(new ArrayList<>(), history.getHistory());
+        Assertions.assertTrue(history.getHistory().isEmpty());
     }
-
-    /*@Test
-    void canNotBeMoreThan10Elements() {
-        HistoryManager history = Managers.getDefaultHistory();
-        Task task = new Task("1", "2",  TaskStatus.NEW);
-
-        for (int i = 0; i < 11; i++) {
-            history.add(task);
-        }
-
-        List<Task> tasks = history.getHistory();
-
-        assertEquals(10, tasks.size());
-    }*/
 }

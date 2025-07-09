@@ -14,6 +14,16 @@ public class Epic extends Task {
         super(id, name, description, TaskStatus.NEW);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public void addSubtaskId(int subtaskId) {
         if (subtaskId != this.id)
             subtasksId.add(subtaskId);
@@ -42,13 +52,9 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
-                "epicSubTasks.length='" + subtasksId.size() + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+        return super.toString().replaceFirst("Task", "Epic")
+                .replaceFirst("}", ", " +
+                        "epicSubTasks.length='" + subtasksId.size() + "'}");
     }
 
     public int removeSubId(Integer id) {
