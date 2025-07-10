@@ -25,22 +25,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static void main(String[] args) throws IOException {
         File autoSaveFile = new File("src\\save\\autosave.csv");
-
-        //FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(autoSaveFile);
         FileBackedTaskManager manager = new FileBackedTaskManager(autoSaveFile);
-
-        /*manager.addTask(new Task("task1",
-                "task1",
-                TaskStatus.NEW,
-                LocalDateTime.of(2025, 7, 6, 20, 0),
-                Duration.ofHours(1)));
-        manager.addTask(new Task("task2",
-                "task2",
-                TaskStatus.NEW,
-                LocalDateTime.of(2025, 7, 6, 20, 0),
-                Duration.ofHours(1)));
-
-        manager.getAllTask().forEach(System.out::println);*/
 
         Task task1 = new Task("task1",
                 "task1",

@@ -8,7 +8,6 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -138,22 +137,24 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 "sub1",
                 TaskStatus.NEW,
                 0,
-                LocalDateTime.of(2025,6,28,18,0),
+                LocalDateTime.of(2025, 6, 28, 18, 0),
                 Duration.ofHours(5));
         Subtask sub2 = new Subtask(2,
                 "sub2",
                 "sub2",
                 TaskStatus.NEW,
                 0,
-                LocalDateTime.of(2025,6,29,0,0),
+                LocalDateTime.of(2025, 6, 29, 0, 0),
                 Duration.ofHours(1));
 
         manager.addSubtask(sub1, sub2);
 
         Assertions.assertEquals(epic.getStartTime().get(),
-                LocalDateTime.of(2025,6,28,18,0));
+                LocalDateTime.of(2025, 6, 28, 18, 0));
+        Assertions.assertEquals(epic.getDuration().get(),
+                Duration.ofHours(6));
         Assertions.assertEquals(epic.getEndTime().get(),
-                LocalDateTime.of(2025,6,29,1,0));
+                LocalDateTime.of(2025, 6, 29, 0, 0));
     }
 
     @Test

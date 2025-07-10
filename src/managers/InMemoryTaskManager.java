@@ -244,28 +244,26 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime epicStartTime = subs.stream()
                 .map(Task::getStartTime)
                 .filter(Optional::isPresent)
+                .map(Optional::get)
                 .min((time1, time2) -> {
-                    if (time1.get().isBefore(time2.get())) return -1;
-                    else if (time1.get().isAfter(time2.get())) return 1;
+                    if (time1.isBefore(time2)) return -1;
+                    else if (time1.isAfter(time2)) return 1;
                     else return 0;
                 })
-                .orElse(Optional.empty())
                 .orElse(null);
 
-        LocalDateTime epicEndTime = subs.stream()
-                .map(Task::getEndTime)
+        long totalSeconds = subs.stream()
+                .map(Task::getDuration)
                 .filter(Optional::isPresent)
-                .max((time1, time2) -> {
-                    if (time1.get().isBefore(time2.get())) return -1;
-                    else if (time1.get().isAfter(time2.get())) return 1;
-                    else return 0;
-                })
-                .orElse(Optional.empty())
-                .orElse(null);
+                .map(Optional::get)
+                .mapToLong(Duration::toSeconds)
+                .sum();
+        Duration epicDuration = Duration.ofSeconds(totalSeconds);
 
-        if (epicStartTime != null && epicEndTime != null) {
+        if (epicStartTime != null && !epicDuration.isZero()) {
             epic.setStartTime(epicStartTime);
-            epic.setDuration(Duration.between(epicStartTime, epicEndTime));
+            epic.setDuration(epicDuration);
+            epic.setEndTime(epicStartTime.plus(epicDuration));
         }
     }
 
