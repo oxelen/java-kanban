@@ -1,6 +1,6 @@
-id,type,name,status,description,epic
-0,TASK,task2,NEW,d2,
-1,TASK,Task1,NEW,Description task1,
-4,TASK,task3,NEW,d3,
-2,EPIC,Epic2,DONE,Description epic2,
-3,SUBTASK,Sub Task2,DONE,Description sub task3,2
+id,type,name,status,description,startTime,duration,epic
+0,TASK,task1,NEW,task1,20.06.2025 | 15.00,3600,
+1,TASK,task2,NEW,task2,29.06.2025 | 10.00,3600,
+4,TASK,task,NEW,task,null,null,
+2,EPIC,Epic,NEW,epic,25.06.2025 | 20.25,14400,
+3,SUBTASK,sub1,NEW,sub1,25.06.2025 | 20.25,14400,2

@@ -3,19 +3,34 @@ import org.junit.jupiter.api.Test;
 import task.Subtask;
 import task.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 class SubtaskTest {
     @Test
     void shouldEqualsSubtasksIfIdsEquals() {
-        Subtask sub1 = new Subtask(0, "1", "1", TaskStatus.NEW, 0);
+        Subtask sub1 = new Subtask(0,
+                "1",
+                "1",
+                TaskStatus.NEW,
+                0);
 
-        Subtask sub2 = new Subtask(0, "1", "1", TaskStatus.NEW, 0);
+        Subtask sub2 = new Subtask(0,
+                "1",
+                "1",
+                TaskStatus.NEW,
+                0);
 
         Assertions.assertEquals(sub1, sub2);
     }
 
     @Test
     void subTaskCantBeHisOwnEpic() {
-        Subtask sub = new Subtask(0, "1", "1", TaskStatus.NEW, 0);
+        Subtask sub = new Subtask(0,
+                "1",
+                "1",
+                TaskStatus.NEW,
+                0);
 
         Assertions.assertEquals(-1, sub.getEpicId());
     }
