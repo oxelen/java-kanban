@@ -6,12 +6,7 @@ import com.sun.net.httpserver.HttpServer;
 import http.handlers.*;
 import http.typeAdapters.DurationTypeAdapter;
 import http.typeAdapters.LocalDateTimeTypeAdapter;
-import managers.Managers;
 import managers.TaskManager;
-import task.Epic;
-import task.Subtask;
-import task.Task;
-import task.TaskStatus;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -25,7 +20,7 @@ public class HttpTaskServer {
     private static final Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .create();;
+            .create();
 
     public HttpTaskServer(TaskManager manager) {
         this.manager = manager;
