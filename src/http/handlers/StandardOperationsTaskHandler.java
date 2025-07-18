@@ -6,10 +6,8 @@ import com.sun.net.httpserver.HttpHandler;
 import exceptions.IntersectionException;
 import exceptions.NotFoundException;
 import managers.TaskManager;
-import task.Task;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public abstract class StandardOperationsTaskHandler extends BaseHttpHandler implements HttpHandler {
     protected TaskManager manager;
@@ -83,5 +81,7 @@ public abstract class StandardOperationsTaskHandler extends BaseHttpHandler impl
         return Endpoint.UNKNOWN;
     }
 
-    private enum Endpoint {GET_ALL_TASKS, GET_TASK_BY_ID, CREATE_TASK, UPDATE_TASK, DELETE_TASK, UNKNOWN}
+    private enum Endpoint {
+        GET_ALL_TASKS, GET_TASK_BY_ID, CREATE_TASK, UPDATE_TASK, DELETE_TASK, UNKNOWN
+    }
 }
