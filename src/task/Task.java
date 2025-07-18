@@ -12,8 +12,8 @@ public class Task {
     protected String description;
     protected int id;
     protected TaskStatus status;
-    protected Optional<Duration> duration = Optional.empty();
-    protected Optional<LocalDateTime> startTime = Optional.empty();
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String name,
                 String description,
@@ -73,29 +73,19 @@ public class Task {
         return status;
     }
 
-    @Override
-    public String toString() {
-        String res = "Task={"
-                + "id='" + id + "', "
-                + "name='" + name + "', "
-                + "description='" + description + "', "
-                + "status='" + status;
-
-        return (getEndTime().isPresent())
-                ? (res + "', "
-                + "startTime='" + startTime.get().format(ManagerUtil.FORMATTER) + "', "
-                + "duration(in seconds)='" + duration.get().toSeconds() + "', "
-                + "endTime='" + getEndTime().get().format(ManagerUtil.FORMATTER) + "'}")
-                : (res + "'}");
-    }
+    public void setStatus(TaskStatus status) {this.status = status;}
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {this.name = name;}
+
     public String getDescription() {
         return description;
     }
+
+    public void setDescription(String description) {this.description = description;}
 
     public Optional<LocalDateTime> getEndTime() {
         if (getStartTime().isPresent() && getDuration().isPresent()) {
@@ -106,19 +96,31 @@ public class Task {
     }
 
     public Optional<LocalDateTime> getStartTime() {
-        return startTime;
-    }
-
-    public Optional<Duration> getDuration() {
-        return duration;
+        return Optional.ofNullable(startTime);
     }
 
     public void setStartTime(LocalDateTime startTime) {
-        this.startTime = Optional.ofNullable(startTime);
+        this.startTime = startTime;
+    }
+
+    public Optional<Duration> getDuration() {
+        return Optional.ofNullable(duration);
     }
 
     public void setDuration(Duration duration) {
-        this.duration = Optional.ofNullable(duration);
+        this.duration = duration;
+    }
+
+    public boolean isCrossByTime(Task task) {
+        if (this.getEndTime().isEmpty() || task.getEndTime().isEmpty()) return false;
+
+        LocalDateTime start1 = this.startTime;
+        LocalDateTime end1 = this.getEndTime().get();
+
+        LocalDateTime start2 = task.startTime;
+        LocalDateTime end2 = task.getEndTime().get();
+
+        return !start2.isAfter(end1) && !end2.isBefore(start1);
     }
 
     @Override
@@ -136,15 +138,19 @@ public class Task {
         return Objects.hash(name, description, id, status);
     }
 
-    public boolean isCrossByTime(Task task) {
-        if (this.getStartTime().isEmpty()) return false;
+    @Override
+    public String toString() {
+        String res = "Task={"
+                + "id='" + id + "', "
+                + "name='" + name + "', "
+                + "description='" + description + "', "
+                + "status='" + status;
 
-        LocalDateTime start1 = this.getStartTime().get();
-        LocalDateTime end1 = this.getEndTime().get();
-
-        LocalDateTime start2 = task.getStartTime().get();
-        LocalDateTime end2 = task.getEndTime().get();
-
-        return !start2.isAfter(end1) && !end2.isBefore(start1);
+        return (getEndTime().isPresent())
+                ? (res + "', "
+                + "startTime='" + startTime.format(ManagerUtil.FORMATTER) + "', "
+                + "duration(in seconds)='" + duration.toSeconds() + "', "
+                + "endTime='" + getEndTime().get().format(ManagerUtil.FORMATTER) + "'}")
+                : (res + "'}");
     }
 }

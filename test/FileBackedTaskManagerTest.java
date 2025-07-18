@@ -1,3 +1,5 @@
+import exceptions.IntersectionException;
+import exceptions.NotFoundException;
 import managers.FileBackedTaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +52,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     }
 
     @Test
-    void shouldSaveSomeTasks() throws IOException {
+    void shouldSaveSomeTasks() throws IOException, IntersectionException, NotFoundException {
         manager.addTask(task1);
         manager.addEpic(epic1);
         manager.addSubtask(sub1);
@@ -65,7 +67,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     }
 
     @Test
-    void shouldLoadSomeTasks() throws IOException {
+    void shouldLoadSomeTasks() throws IOException, IntersectionException, NotFoundException {
         manager.addTask(task1);
         manager.addEpic(epic1);
         manager.addSubtask(sub1);

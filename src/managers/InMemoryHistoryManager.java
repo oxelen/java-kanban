@@ -1,5 +1,6 @@
 package managers;
 
+import exceptions.NotFoundException;
 import task.Task;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public List<Task> getHistory() {
+    public List<Task> getHistory() throws NotFoundException{
         return getTasks();
     }
 
@@ -83,14 +84,14 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    private List<Task> getTasks() {
+    private List<Task> getTasks() throws NotFoundException {
         Node node = first;
         List<Task> tasks = new ArrayList<>();
         while (node != null) {
             tasks.add(node.task);
             node = node.next;
         }
-
+        if (tasks.isEmpty()) throw new NotFoundException();
         return tasks;
     }
 
