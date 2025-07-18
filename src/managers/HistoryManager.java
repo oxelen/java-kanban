@@ -1,7 +1,8 @@
 package managers;
 
 import exceptions.NotFoundException;
-import task.*;
+import task.Task;
+
 import java.util.List;
 
 public interface HistoryManager {

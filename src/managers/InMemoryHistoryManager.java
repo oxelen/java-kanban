@@ -25,7 +25,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public List<Task> getHistory() throws NotFoundException{
+    public List<Task> getHistory() throws NotFoundException {
         return getTasks();
     }
 

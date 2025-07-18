@@ -48,7 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistory() throws NotFoundException{
+    public List<Task> getHistory() throws NotFoundException {
         return history.getHistory();
     }
 
