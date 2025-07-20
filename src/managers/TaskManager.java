@@ -1,5 +1,7 @@
 package managers;
 
+import exceptions.IntersectionException;
+import exceptions.NotFoundException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -10,14 +12,14 @@ import java.util.TreeSet;
 
 public interface TaskManager {
 
-    List<Task> getHistory();
+    List<Task> getHistory() throws NotFoundException;
 
     //Create Tasks
-    void addTask(Task... tasks);
+    void addTask(Task task) throws IntersectionException;
 
-    void addEpic(Epic... epics);
+    void addEpic(Epic epic) throws IntersectionException;
 
-    void addSubtask(Subtask... subtasks);
+    void addSubtask(Subtask subtask) throws IntersectionException, NotFoundException;
 
     //Get Tasks
     ArrayList<Task> getAllTask();
@@ -34,28 +36,27 @@ public interface TaskManager {
     void deleteAllSubtask();
 
     //Get tasks by id
-    Task getTaskById(int id);
+    Task getTaskById(int id) throws NotFoundException;
 
-    Epic getEpicById(int id);
+    Epic getEpicById(int id) throws NotFoundException;
 
-    Subtask getSubtaskById(int id);
+    Subtask getSubtaskById(int id) throws NotFoundException;
 
     //Update Tasks
-    void updateTask(Task task);
+    void updateTask(Task task) throws IntersectionException, NotFoundException;
 
     void updateEpic(Epic epic);
 
-    void updateSubtask(Subtask subtask);
+    void updateSubtask(Subtask subtask) throws IntersectionException, NotFoundException;
 
     //Delete task by id
-    void deleteTaskById(int id);
+    void deleteTaskById(int id) throws NotFoundException;
 
-    void deleteEpicById(int id);
+    void deleteEpicById(int id) throws NotFoundException;
 
-    void deleteSubtaskById(int id);
+    void deleteSubtaskById(int id) throws NotFoundException;
 
-    //Get Subtasks by epic
-    ArrayList<Subtask> getSubtasksByEpicId(int epicId);
+    ArrayList<Subtask> getSubtasksByEpicId(int epicId) throws NotFoundException;
 
     TreeSet<Task> getPrioritizedTasks();
 }

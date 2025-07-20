@@ -1,6 +1,8 @@
 package managers;
 
+import exceptions.IntersectionException;
 import exceptions.ManagerSaveException;
+import exceptions.NotFoundException;
 import task.*;
 import util.ManagerUtil;
 
@@ -23,69 +25,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.autoSaveFile = autoSaveFile;
     }
 
-    public static void main(String[] args) throws IOException {
-        File autoSaveFile = new File("src\\save\\autosave.csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(autoSaveFile);
-
-        Task task1 = new Task("task1",
-                "task1",
-                TaskStatus.NEW,
-                LocalDateTime.of(2025, 06, 20, 15, 0),
-                Duration.ofHours(1));
-
-        Task task2 = new Task("task2",
-                "task2",
-                TaskStatus.NEW,
-                LocalDateTime.of(2025, 06, 29, 10, 0),
-                Duration.ofHours(1));
-
-        manager.addTask(task1, task2);
-
-        Epic epic1 = new Epic("Epic", "epic");
-        manager.addEpic(epic1);
-
-        Subtask sub1 = new Subtask("sub1",
-                "sub1",
-                TaskStatus.NEW,
-                epic1.getId(),
-                LocalDateTime.of(2025, 6, 25, 20, 25),
-                Duration.ofHours(4));
-        Subtask sub2 = new Subtask("sub2",
-                "sub2",
-                TaskStatus.NEW,
-                epic1.getId(),
-                LocalDateTime.of(2025, 6, 25, 16, 25),
-                Duration.ofHours(5));
-
-        manager.addSubtask(sub1, sub2);
-
-        Task taskWithoutTime = new Task("task", "task", TaskStatus.NEW);
-        manager.addTask(taskWithoutTime);
-
-        manager.getPrioritizedTasks().forEach(System.out::println);
-        manager.getSubtasksByEpicId(2).forEach(System.out::println);
-    }
-
     @Override
-    public void addTask(Task... tasks) {
-        super.addTask(tasks);
+    public void addTask(Task task) throws IntersectionException {
+        super.addTask(task);
         save();
     }
 
     @Override
-    public void addEpic(Epic... epics) {
-        super.addEpic(epics);
+    public void addEpic(Epic epic) throws IntersectionException {
+        super.addEpic(epic);
         save();
     }
 
     @Override
-    public void addSubtask(Subtask... subtasks) {
-        super.addSubtask(subtasks);
+    public void addSubtask(Subtask subtask) throws IntersectionException, NotFoundException {
+        super.addSubtask(subtask);
         save();
     }
 
     @Override
-    public void updateTask(Task task) {
+    public void updateTask(Task task) throws IntersectionException, NotFoundException {
         super.updateTask(task);
         save();
     }
@@ -97,7 +56,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public void updateSubtask(Subtask subtask) throws IntersectionException, NotFoundException {
         super.updateSubtask(subtask);
         save();
     }
@@ -121,19 +80,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteTaskById(int id) {
+    public void deleteTaskById(int id) throws NotFoundException {
         super.deleteTaskById(id);
         save();
     }
 
     @Override
-    public void deleteEpicById(int id) {
+    public void deleteEpicById(int id) throws NotFoundException {
         super.deleteEpicById(id);
         save();
     }
 
     @Override
-    public void deleteSubtaskById(int id) {
+    public void deleteSubtaskById(int id) throws NotFoundException {
         super.deleteSubtaskById(id);
         save();
     }
@@ -150,12 +109,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             if (task.getClass().equals(Epic.class)) {
                 Epic epic = (Epic) task;
-                loadedManager.addEpic(epic);
+                try {
+                    loadedManager.addEpic(epic);
+                } catch (IntersectionException e) {
+                    throw new RuntimeException("load error");
+                }
             } else if (task.getClass().equals(Subtask.class)) {
                 Subtask sub = (Subtask) task;
-                loadedManager.addSubtask(sub);
-            } else
-                loadedManager.addTask(task);
+                try {
+                    loadedManager.addSubtask(sub);
+                } catch (IntersectionException | NotFoundException e) {
+                    throw new RuntimeException("load Error");
+                }
+            } else {
+                try {
+                    loadedManager.addTask(task);
+                } catch (IntersectionException e) {
+                    throw new RuntimeException("load Error");
+                }
+            }
         });
         return loadedManager;
     }

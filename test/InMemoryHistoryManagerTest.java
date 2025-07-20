@@ -1,3 +1,4 @@
+import exceptions.NotFoundException;
 import managers.HistoryManager;
 import managers.Managers;
 import org.junit.jupiter.api.Assertions;
@@ -43,11 +44,11 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldCreateEmptyHistory() {
-        Assertions.assertTrue(history.getHistory().isEmpty());
+        Assertions.assertThrows(NotFoundException.class, history::getHistory);
     }
 
     @Test
-    void shouldNotAddSameTasks() {
+    void shouldNotAddSameTasks() throws NotFoundException{
         history.add(task1);
         history.add(task1);
 
@@ -55,7 +56,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void shouldRemoveFirst() {
+    void shouldRemoveFirst() throws NotFoundException{
         List<Task> target = List.of(task2, task3);
 
         history.add(task1);
@@ -68,7 +69,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void shouldRemoveMiddle() {
+    void shouldRemoveMiddle() throws NotFoundException{
         List<Task> target = List.of(task1, task3);
 
         history.add(task1);
@@ -81,7 +82,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void shouldRemoveLast() {
+    void shouldRemoveLast() throws NotFoundException{
         List<Task> target = List.of(task1, task2);
 
         history.add(task1);
@@ -94,13 +95,13 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void singleTaskHistoryWorksCorrect() {
+    void singleTaskHistoryWorksCorrect() throws NotFoundException{
         history.add(task1);
         assertEquals(List.of(task1), history.getHistory());
     }
 
     @Test
-    void addElementsHistoryWorksCorrect() {
+    void addElementsHistoryWorksCorrect() throws NotFoundException{
         history.add(task1);
         history.add(task2);
         history.add(task3);
@@ -114,6 +115,6 @@ class InMemoryHistoryManagerTest {
         history.add(task1);
         history.remove(task1.getId());
 
-        Assertions.assertTrue(history.getHistory().isEmpty());
+        Assertions.assertThrows(NotFoundException.class, history::getHistory);
     }
 }

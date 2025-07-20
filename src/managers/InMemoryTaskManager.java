@@ -1,5 +1,7 @@
 package managers;
 
+import exceptions.IntersectionException;
+import exceptions.NotFoundException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -24,6 +26,14 @@ public class InMemoryTaskManager implements TaskManager {
             return 1;
     });
 
+    /*protected final TreeSet<Task> prioritizedTasks = new TreeSet<>((task1, task2) -> {
+        if (task1.equals(task2)) return 0;
+        if (task1.getStartTime().get().isBefore(task2.getStartTime().get()))
+            return -1;
+        else
+            return 1;
+    });*/
+
     private final HistoryManager history;
 
     private int idCreator;
@@ -38,41 +48,41 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistory() {
+    public List<Task> getHistory() throws NotFoundException {
         return history.getHistory();
     }
 
     //Create Tasks
     @Override
-    public void addTask(Task... tasks) {
-        Arrays.stream(tasks)
-                .forEach(task -> {
-                    if (task.getId() == -1)
-                        task.setId(createId());
-                    updateTask(task);
-                });
+    public void addTask(Task task) throws IntersectionException {
+        if (taskMap.containsKey(task.getId()) || isCrossWithTasks(task)) throw new IntersectionException();
+        if (task.getId() == -1)
+            task.setId(createId());
+        taskMap.put(task.getId(), task);
+        addToPrioritizedSet(task);
     }
 
     @Override
-    public void addEpic(Epic... epics) {
-        Arrays.stream(epics)
-                .forEach(epic -> {
-                    if (epic.getId() == -1)
-                        epic.setId(createId());
-                    updateEpic(epic);
-                });
+    public void addEpic(Epic epic) throws IntersectionException {
+        if (epicMap.containsKey(epic.getId()) || isCrossWithTasks(epic)) throw new IntersectionException();
+        if (epic.getId() == -1)
+            epic.setId(createId());
+        epicMap.put(epic.getId(), epic);
+        addToPrioritizedSet(epic);
     }
 
     @Override
-    public void addSubtask(Subtask... subtasks) {
-        Arrays.stream(subtasks)
-                .forEach(subtask -> {
-                    if (subtask.getId() == -1)
-                        subtask.setId(createId());
-                    epicMap.get(subtask.getEpicId())
-                            .addSubtaskId(subtask.getId());
-                    updateSubtask(subtask);
-                });
+    public void addSubtask(Subtask subtask) throws IntersectionException, NotFoundException {
+        if (subtaskMap.containsKey(subtask.getId()) || isCrossWithTasks(subtask)) throw new IntersectionException();
+        if (subtask.getId() == -1)
+            subtask.setId(createId());
+        if (!epicMap.containsKey(subtask.getEpicId())) throw new NotFoundException();
+        epicMap.get(subtask.getEpicId())
+                .addSubtaskId(subtask.getId());
+
+        subtaskMap.put(subtask.getId(), subtask);
+        updateEpicStatusAndTime(subtask.getEpicId());
+        addToPrioritizedSet(subtask);
     }
 
     //Get Tasks
@@ -118,30 +128,35 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Get tasks by id
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(int id) throws NotFoundException {
+        if (!taskMap.containsKey(id)) throw new NotFoundException();
         history.add(taskMap.get(id));
         return taskMap.get(id);
     }
 
     @Override
-    public Epic getEpicById(int id) {
+    public Epic getEpicById(int id) throws NotFoundException {
+        if (!epicMap.containsKey(id)) throw new NotFoundException();
         history.add(epicMap.get(id));
         return epicMap.get(id);
     }
 
     @Override
-    public Subtask getSubtaskById(int id) {
+    public Subtask getSubtaskById(int id) throws NotFoundException {
+        if (!subtaskMap.containsKey(id)) throw new NotFoundException();
         history.add(subtaskMap.get(id));
         return subtaskMap.get(id);
     }
 
     //Update Tasks
     @Override
-    public void updateTask(Task task) {
-        if (isNotCrossWithTasks(task)) {
-            taskMap.put(task.getId(), task);
-            addToPrioritizedSet(task);
-        }
+    public void updateTask(Task task) throws IntersectionException, NotFoundException {
+        int id = task.getId();
+        if (!taskMap.containsKey(id)) throw new NotFoundException();
+        prioritizedTasks.remove(taskMap.get(id));
+        taskMap.remove(id);
+
+        addTask(task);
     }
 
     @Override
@@ -150,42 +165,57 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        if (isNotCrossWithTasks(subtask)) {
-            subtaskMap.put(subtask.getId(), subtask);
-            updateEpicStatusAndTime(subtask.getEpicId());
-            addToPrioritizedSet(subtask);
-        }
+    public void updateSubtask(Subtask subtask) throws IntersectionException, NotFoundException {
+        int id = subtask.getId();
+        if (!subtaskMap.containsKey(id)) throw new NotFoundException();
+        prioritizedTasks.remove(subtaskMap.get(id));
+        epicMap.get(subtaskMap.get(id).getEpicId())
+                .removeSubId(id);
+        updateEpicStatusAndTime((subtaskMap.get(id).getEpicId()));
+        subtaskMap.remove(id);
+
+        addSubtask(subtask);
     }
 
     //Delete task by id
     @Override
-    public void deleteTaskById(int id) {
+    public void deleteTaskById(int id) throws NotFoundException {
+        if (!taskMap.containsKey(id)) throw new NotFoundException();
         history.remove(id);
+        prioritizedTasks.remove(getTaskById(id));
         taskMap.remove(id);
     }
 
     @Override
-    public void deleteEpicById(int id) {
+    public void deleteEpicById(int id) throws NotFoundException {
+        if (!epicMap.containsKey(id)) throw new NotFoundException();
         history.remove(id);
         getSubtasksByEpicId(id)
-                .forEach(sub -> deleteEpicById(sub.getId()));
+                .forEach(sub -> {
+                    try {
+                        deleteSubtaskById(sub.getId());
+                    } catch (NotFoundException e) {
+                        throw new RuntimeException("error");
+                    }
+                });
+        prioritizedTasks.remove(epicMap.get(id));
         epicMap.remove(id);
     }
 
     @Override
-    public void deleteSubtaskById(int id) {
+    public void deleteSubtaskById(int id) throws NotFoundException {
+        if (!subtaskMap.containsKey(id)) throw new NotFoundException();
         history.remove(id);
-
-        Epic tempEpic = epicMap.get(subtaskMap.get(id).getEpicId());
-        subtaskMap.get(id).setId(-1);
-        tempEpic.removeSubId(id);
+        prioritizedTasks.remove(subtaskMap.get(id));
+        epicMap.get(subtaskMap.get(id).getEpicId())
+                .removeSubId(id);
         subtaskMap.remove(id);
     }
 
     //Get Subtasks by epic
     @Override
-    public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
+    public ArrayList<Subtask> getSubtasksByEpicId(int epicId) throws NotFoundException {
+        if (!epicMap.containsKey(epicId)) throw new NotFoundException();
         return epicMap.get(epicId).getSubtasks().stream()
                 .map(subtaskMap::get)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -212,11 +242,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void addToPrioritizedSet(Task task) {
-        if (task.getStartTime().isPresent() && !prioritizedTasks.contains(task)) prioritizedTasks.add(task);
+        if (task.getStartTime().isPresent()) prioritizedTasks.add(task);
     }
 
-    private boolean isNotCrossWithTasks(Task task) {
-        return getPrioritizedTasks().stream()
+    private boolean isCrossWithTasks(Task task) {
+        return !getPrioritizedTasks().stream()
                 .filter(task::isCrossByTime)
                 .toList()
                 .isEmpty();
@@ -224,12 +254,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void updateEpicStatusAndTime(int epicId) {
         Epic epic = epicMap.get(epicId);
-        ArrayList<Subtask> subs = getSubtasksByEpicId(epicId);
+        try {
+            ArrayList<Subtask> subs = getSubtasksByEpicId(epicId);
+            updateEpicStatus(epic, subs);
+            updateEpicTime(epic, subs);
 
-        updateEpicStatus(epic, subs);
-        updateEpicTime(epic, subs);
-
-        addToPrioritizedSet(epic);
+            addToPrioritizedSet(epic);
+        } catch (NotFoundException e) {
+            throw new RuntimeException("error");
+        }
     }
 
     private void updateEpicStatus(Epic epic, ArrayList<Subtask> subs) {

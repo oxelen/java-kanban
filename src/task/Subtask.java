@@ -48,6 +48,12 @@ public class Subtask extends Task {
         return epicId;
     }
 
+    private void setEpicId(int epicId) {
+        if (epicId != this.id)
+            this.epicId = epicId;
+        else this.epicId = -1;
+    }
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
@@ -63,11 +69,5 @@ public class Subtask extends Task {
         return super.toString()
                 .replaceFirst("Task", "Subtask")
                 .replaceFirst("}", ", " + "epicId='" + epicId + "'}");
-    }
-
-    private void setEpicId(int epicId) {
-        if (epicId != this.id)
-            this.epicId = epicId;
-        else this.epicId = -1;
     }
 }
